@@ -20,17 +20,21 @@
     </script>
 </head>
 <body>
-    <h1>hello</h1>
     <button id="theme-toggle" aria-label="Toggle theme">☀️</button>
-    <h1>Say,</h1>
-    <button class="moving-button" onclick={handleclick()}>No</button>
-    <button  >Yes</button>
-    <!-- <button type="button" onclick={handleclick()} >yes</button> -->
+    
+    <div class="container">
+        <h1>Say,</h1>
+        <div class="button-group">
+            <button class="yes-button" onclick="handleClick()">Yes</button>
+            <button class="moving-button">No</button>
+        </div>
+    </div>
 
     <script>
-        function handleclick(){
-            console.log("yes");
+        function handleClick() {
+            alert("Yay! I knew you would say Yes! ❤️");
         }
+
         const toggleButton = document.querySelector('#theme-toggle');
 
         function updateToggleIcon() {
@@ -67,8 +71,20 @@
             const randomX = Math.floor(Math.random() * (viewportWidth - movingButton.offsetWidth));
             const randomY = Math.floor(Math.random() * (viewportHeight - movingButton.offsetHeight));
 
-            movingButton.style.left = randomX + 'px';
-            movingButton.style.top = randomY + 'px';
+            // Ensure the button stays within viewport with some padding
+            const safeX = Math.max(10, Math.min(randomX, viewportWidth - movingButton.offsetWidth - 10));
+            const safeY = Math.max(10, Math.min(randomY, viewportHeight - movingButton.offsetHeight - 10));
+
+            movingButton.style.position = 'fixed'; // Ensure it can move freely relative to viewport
+            movingButton.style.left = safeX + 'px';
+            movingButton.style.top = safeY + 'px';
+        });
+        
+        // Also move on click/tap just in case touch devices try to tap
+        movingButton.addEventListener('click', function(e) {
+             e.preventDefault();
+             const event = new Event('mouseover');
+             movingButton.dispatchEvent(event);
         });
     </script>
 </body>
