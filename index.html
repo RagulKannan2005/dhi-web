@@ -1,91 +1,174 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
-    <script>
-        // Check for saved user preference, if any, on load of the website
-        const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Say Yes ❤️</title>
 
-        if (currentTheme) {
-            document.documentElement.setAttribute('data-theme', currentTheme);
-        } else {
-             // If no preference, check system setting
-             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                 document.documentElement.setAttribute('data-theme', 'dark');
-             }
-        }
+    <style>
+      :root {
+        --bg: #ffffff;
+        --text: #111;
+        --btn: #ff4d6d;
+      }
+
+      [data-theme="dark"] {
+        --bg: #0f172a;
+        --text: #e5e7eb;
+        --btn: #fb7185;
+      }
+
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--bg);
+        color: var(--text);
+        font-family: system-ui, sans-serif;
+      }
+
+      #theme-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        font-size: 1.4rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .container {
+        text-align: center;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      .button-group {
+        position: relative;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      button {
+        padding: 12px 24px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+      }
+
+      .yes-button {
+        background: var(--btn);
+        color: white;
+      }
+
+      .moving-button {
+        background: #9ca3af;
+        color: #111;
+        position: relative;
+        transition:
+          left 0.25s ease,
+          top 0.25s ease;
+      }
+    </style>
+
+    <script>
+      // Theme initialization
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
     </script>
-</head>
-<body>
+  </head>
+
+  <body>
     <button id="theme-toggle" aria-label="Toggle theme">☀️</button>
-    
+
     <div class="container">
-        <h1>Say,</h1>
-        <div class="button-group">
-            <button class="yes-button" onclick="handleClick()">Yes</button>
-            <button class="moving-button">No</button>
-        </div>
+      <h1>say</h1>
+      <div class="button-group">
+        <button class="yes-button" id="yesBtn" onclick="redirect()">Yes</button>
+        <button class="moving-button" id="noBtn">No</button>
+      </div>
     </div>
 
+    <!-- EmailJS -->
+
     <script>
-        function handleClick() {
-            alert("Yay! I knew you would say Yes! ❤️");
-        }
+      /* =======================
+       THEME TOGGLE
+    ======================== */
+      const toggleButton = document.getElementById("theme-toggle");
 
-        const toggleButton = document.querySelector('#theme-toggle');
+      function updateToggleIcon() {
+        const theme = document.documentElement.getAttribute("data-theme");
+        toggleButton.textContent = theme === "dark" ? "🌙" : "☀️";
+      }
 
-        function updateToggleIcon() {
-            if (!toggleButton) return;
-            const theme = document.documentElement.getAttribute('data-theme');
-            // Show a moon when in dark mode, sun when in light mode
-            toggleButton.textContent = theme === 'dark' ? '🌙' : '☀️';
-        }
-
-        function switchTheme(e) {
-            let currentTheme = document.documentElement.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-            }
-            updateToggleIcon();
-        }
-
-        if (toggleButton) {
-            toggleButton.addEventListener('click', switchTheme, false);
-            updateToggleIcon();
-        }
-
-        const movingButton = document.querySelector('.moving-button');
-
-        movingButton.addEventListener('mouseover', function() {
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            
-            // Generate random position
-            const randomX = Math.floor(Math.random() * (viewportWidth - movingButton.offsetWidth));
-            const randomY = Math.floor(Math.random() * (viewportHeight - movingButton.offsetHeight));
-
-            // Ensure the button stays within viewport with some padding
-            const safeX = Math.max(10, Math.min(randomX, viewportWidth - movingButton.offsetWidth - 10));
-            const safeY = Math.max(10, Math.min(randomY, viewportHeight - movingButton.offsetHeight - 10));
-
-            movingButton.style.position = 'fixed'; // Ensure it can move freely relative to viewport
-            movingButton.style.left = safeX + 'px';
-            movingButton.style.top = safeY + 'px';
+      if (toggleButton) {
+        toggleButton.addEventListener("click", () => {
+          const current = document.documentElement.getAttribute("data-theme");
+          const next = current === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("theme", next);
+          updateToggleIcon();
         });
-        
-        // Also move on click/tap just in case touch devices try to tap
-        movingButton.addEventListener('click', function(e) {
-             e.preventDefault();
-             const event = new Event('mouseover');
-             movingButton.dispatchEvent(event);
+        document.addEventListener("DOMContentLoaded", updateToggleIcon);
+      }
+
+      /* =======================
+       YES BUTTON LOGIC
+    ======================== */
+      function redirect() {
+        window.location.href = "firstpage.html";
+      }
+
+      /* =======================
+       NO BUTTON MOVEMENT
+    ======================== */
+      const noBtn = document.getElementById("noBtn");
+      let lastMove = 0;
+
+      function moveButton() {
+        if (!noBtn) return;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        const x = Math.random() * (vw - noBtn.offsetWidth - 20);
+        const y = Math.random() * (vh - noBtn.offsetHeight - 20);
+
+        noBtn.style.position = "fixed";
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      }
+
+      if (
+        noBtn &&
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        noBtn.addEventListener("mouseover", () => {
+          if (Date.now() - lastMove < 200) return; // Slightly faster reaction
+          lastMove = Date.now();
+          moveButton();
         });
+
+        noBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          moveButton();
+        });
+
+        noBtn.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          moveButton();
+        });
+      }
     </script>
-</body>
+  </body>
 </html>
